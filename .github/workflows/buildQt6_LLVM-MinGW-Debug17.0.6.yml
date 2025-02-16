@@ -62,7 +62,7 @@ jobs:
         unzip -q qt-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw17.0.6.cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw17.0.6-debug.cmd`""
 
     # 打包
     - name: Package binaries
