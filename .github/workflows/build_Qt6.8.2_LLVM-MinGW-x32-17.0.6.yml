@@ -1,4 +1,4 @@
-name: build_Qt6.8.2_LLVM-MinGW-Debug-x32-17.0.6
+name: build_Qt6.8.2_LLVM-MinGW-x32-17.0.6
 
 on: workflow_dispatch
 #on: [push, pull_request]
