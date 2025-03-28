@@ -19,7 +19,7 @@ SET QT_PATH=D:\a\buildQt\Qt
 SET SRC_QT="%QT_PATH%\%QT_VERSION%\qt-everywhere-src-%QT_VERSION%"
 
 :: 设置安装文件夹目录
-SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-static\%LLVM_MinGW_VERSION%"
+SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-shared\%LLVM_MinGW_VERSION%"
 
 :: 设置build文件夹目录
 SET BUILD_DIR="%QT_PATH%\%QT_VERSION%\build-%LLVM_MinGW_VERSION%"
@@ -30,7 +30,7 @@ rmdir /s /q "%BUILD_DIR%"
 mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 
 :: configure
-call %SRC_QT%\configure.bat -static -static-runtime -release -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel
+call %SRC_QT%\configure.bat -shared -release -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel
 
 :: 编译(不要忘记点)
 cmake --build . --parallel
