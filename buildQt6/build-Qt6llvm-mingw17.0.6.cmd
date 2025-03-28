@@ -35,8 +35,8 @@ call %SRC_QT%\configure.bat -shared -debug-and-release -prefix %INSTALL_DIR% -no
 :: 编译(不要忘记点)
 cmake --build . --parallel
 
-:: 安装(不要忘记点)
-cmake --install .
+:: 安装(注：cmake --install .会导致安装不完整)
+ninja install
 
 ::复制qt.conf
 copy %~dp0\qt.conf %INSTALL_DIR%\bin
