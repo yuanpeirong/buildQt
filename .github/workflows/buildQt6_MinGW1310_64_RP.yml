@@ -6,10 +6,10 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.8.3
   QT_VERSION2: 6.8
-  FILE_NAME: Qt_6.8.3-shared-Release_mingw1310_64_RP
+  FILE_NAME: Qt_6.8.3-shared-Debug_mingw1310_64_RP
 
 jobs:
-  windows_mingw64_shared_release:
+  windows_mingw64_shared_debug:
     runs-on: windows-latest
 
     steps:

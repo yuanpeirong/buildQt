@@ -9,10 +9,10 @@ on: workflow_dispatch
 env:
   QT_VERSION: 5.15.16
   QT_VERSION2: 5.15
-  FILE_NAME: Qt_5.15.16-shared-Release_mingw1420_64_UCRT
+  FILE_NAME: Qt_5.15.16-shared-Debug_mingw1420_64_UCRT
 
 jobs:
-  windows_mingw64_shared_release:
+  windows_mingw64_shared_debug:
     runs-on: windows-latest
 
     steps:
