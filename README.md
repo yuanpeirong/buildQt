@@ -3,10 +3,15 @@
 ## 说明
 1. 本项目的主要目的是从源代码构建Qt的二进制版本(使用GithubActions自动构建)
 2. 主要针对开源版本的Qt5、Qt6版本
-3. 主要构建Windows版本(使用MSVC、MinGW64、LLVM-MinGW三大编译器)
-4. 主要构建static版本
-5. 主要构建Release版本
-6. 主要构建64位版本
+3. 主要构建`Windows版本`(使用`MSVC`、`MinGW64`、`LLVM-MinGW`三大编译器)
+
+## 各分支说明
+| 分支 | static/shared | debug/release | 备注
+| :----- | :----- | :----- | :-----
+| main | static | release | 主要构建64位版本
+| shared-release | shared | release | 主要构建64位版本
+| shared-debug | shared | debug | 主要构建64位版本
+| shared-debug-and-release | shared | debug-and-release | 主要构建64位版本
 
 ## 版本
 1. 无"RP"版本：从Qt完整源代码构建，构建绝大部分组件
