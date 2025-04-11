@@ -28,7 +28,7 @@ copy %~dp0\qfilesystemengine_win.cpp %SRC_QT%\qtbase\src\corelib\io\qfilesysteme
 SET PATH=%SRC_QT%\qtbase\bin;%SRC_QT%\gnuwin32\bin;%PATH%
 
 :: 设置安装文件夹目录
-SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-static\%MinGW_VERSION%"
+SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-shared\%MinGW_VERSION%"
 
 :: 设置build文件夹目录
 SET BUILD_DIR="%QT_PATH%\%QT_VERSION%\build-%MinGW_VERSION%"
@@ -39,7 +39,7 @@ rmdir /s /q "%BUILD_DIR%"
 mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 
 :: configure
-call %SRC_QT%\configure.bat -static -static-runtime -release -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++
+call %SRC_QT%\configure.bat -static -debug -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++
 
 :: 编译、安装
 mingw32-make -j%NUM_THRED%         
