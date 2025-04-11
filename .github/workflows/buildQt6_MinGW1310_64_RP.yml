@@ -6,7 +6,7 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.9.0
   QT_VERSION2: 6.9
-  FILE_NAME: Qt_6.9.0-static-Release_mingw1310_64_RP
+  FILE_NAME: static-Release_mingw1310_64_RP
 
 jobs:
   windows_mingw64_static_release:
@@ -74,10 +74,10 @@ jobs:
     - name: Package binaries
       run: |
         #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
-        7z a ${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-static -mx=9
+        7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-static -mx=9
 
     # 上传
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{env.FILE_NAME}}
-        path: ${{env.FILE_NAME}}.7z
+        name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
