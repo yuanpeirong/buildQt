@@ -6,10 +6,10 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.9.0
   QT_VERSION2: 6.9
-  FILE_NAME: shared-Release_msvc2022_64
+  FILE_NAME: shared-Debug-Release_msvc2022_64
 
 jobs:
-  windows_msvc_shared_release:
+  windows_msvc_shared_debug_release:
     runs-on: windows-latest
 
     steps:

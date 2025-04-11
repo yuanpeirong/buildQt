@@ -30,13 +30,13 @@ rmdir /s /q "%BUILD_DIR%"
 mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 
 :: configure
-call %SRC_QT%\configure.bat -shared -release -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -platform win32-g++ -no-sql-psql
+call %SRC_QT%\configure.bat -shared -debug-and-release -prefix %INSTALL_DIR% -nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -platform win32-g++ -no-sql-psql
 
 :: 编译(不要忘记点)
 cmake --build . --parallel
 
-:: 安装(不要忘记点)
-cmake --install .
+:: 安装(注：cmake --install .会导致安装不完整)
+ninja install
 
 ::复制qt.conf
 copy %~dp0\qt.conf %INSTALL_DIR%\bin
