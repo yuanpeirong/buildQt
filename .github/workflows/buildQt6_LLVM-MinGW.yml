@@ -1,12 +1,12 @@
-name: build_Qt6.8.3_LLVM-MinGW
+name: build_Qt6.9.0_LLVM-MinGW
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.8.3
-  QT_VERSION2: 6.8
-  FILE_NAME: Qt_6.8.3-static-Release_llvm-mingw20.1.1_64_UCRT
+  QT_VERSION: 6.9.0
+  QT_VERSION2: 6.9
+  FILE_NAME: Qt_6.9.0-static-Release_llvm-mingw20.1.2_64_UCRT
 
 jobs:
   windows_llvm-mingw_static_release:
@@ -28,7 +28,7 @@ jobs:
     - name: Setup LLVM-MinGW
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o llvm-mingw.zip https://github.com/mstorsjo/llvm-mingw/releases/download/20250319/llvm-mingw-20250319-ucrt-x86_64.zip
+        curl -L -o llvm-mingw.zip https://github.com/mstorsjo/llvm-mingw/releases/download/20250402/llvm-mingw-20250402-ucrt-x86_64.zip
         unzip -q llvm-mingw.zip -d ./
 
     # 安装 Ninja
