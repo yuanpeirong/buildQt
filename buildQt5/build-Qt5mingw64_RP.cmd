@@ -5,7 +5,7 @@
 SET QT_VERSION=5.15.16
 
 :: 设置MinGW版本代号
-SET MinGW_VERSION=mingw1420_64_UCRT_RP
+SET MinGW_VERSION=mingw1510_64_UCRT_RP
 
 :: 设置编译器和Perl
 SET PATH=D:\a\buildQt\mingw64\bin;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
