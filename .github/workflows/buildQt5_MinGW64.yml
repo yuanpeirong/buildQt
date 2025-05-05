@@ -1,7 +1,7 @@
 name: build_Qt5.15.16_MinGW64(unavailable)
 
 # 暂不可用，请先使用build_Qt5.15.16_MinGW810_64
-# Qt5.15.16官方使用MinGW810_64 OK，本次使用MinGW1420_64_UCRT，暂不可用
+# Qt5.15.16官方使用MinGW810_64 OK，本次使用MinGW1510_64_UCRT，暂不可用
 
 on: workflow_dispatch
 #on: [push, pull_request]
@@ -9,7 +9,7 @@ on: workflow_dispatch
 env:
   QT_VERSION: 5.15.16
   QT_VERSION2: 5.15
-  FILE_NAME: shared-Release_mingw1420_64_UCRT
+  FILE_NAME: shared-Release_mingw1510_64_UCRT
 
 jobs:
   windows_mingw64_shared_release:
@@ -38,7 +38,7 @@ jobs:
     - name: Setup MinGW64
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o x86_64-release-posix-seh-ucrt.7z https://github.com/niXman/mingw-builds-binaries/releases/download/14.2.0-rt_v12-rev2/x86_64-14.2.0-release-posix-seh-ucrt-rt_v12-rev2.7z
+        curl -L -o x86_64-release-posix-seh-ucrt.7z https://github.com/niXman/mingw-builds-binaries/releases/download/15.1.0-rt_v12-rev0/x86_64-15.1.0-release-posix-seh-ucrt-rt_v12-rev0.7z
         7z x D:\a\buildQt\x86_64-release-posix-seh-ucrt.7z -oD:\a\buildQt
 
     # 构建Qt
