@@ -25,7 +25,7 @@ SET SRC_qttranslations="%QT_PATH%\%QT_VERSION%\qttranslations-everywhere-src-%QT
 SET SRC_qtsvg="%QT_PATH%\%QT_VERSION%\qtsvg-everywhere-src-%QT_VERSION%"
 
 :: 设置安装文件夹目录
-SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-shared\%MSVC_VERSION%"
+SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-static\%MSVC_VERSION%"
 SET QMAKE_PATH=%INSTALL_DIR%\bin\qmake.exe
 
 :: 设置build文件夹目录
@@ -39,7 +39,7 @@ mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 ::编译qtbase
 mkdir build-qtbase
 cd build-qtbase
-call %SRC_qtbase%\configure.bat -shared -debug -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -recheck-all -opengl desktop -platform win32-msvc
+call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -recheck-all -opengl desktop -platform win32-msvc
 jom
 jom install
 cd ..

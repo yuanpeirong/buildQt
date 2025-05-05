@@ -6,10 +6,10 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.9.0
   QT_VERSION2: 6.9
-  FILE_NAME: shared-Debug_llvm-mingw20.1.2_64_UCRT_RP
+  FILE_NAME: static-Release_llvm-mingw20.1.2_64_UCRT_RP
 
 jobs:
-  windows_llvm-mingw_shared_debug:
+  windows_llvm-mingw_static_release:
     runs-on: windows-latest
 
     steps:
@@ -46,7 +46,7 @@ jobs:
         #D:\a\buildQt                                上级目录，这里当做根目录
         #D:\a\buildQt\Qt                             Qt目录
         #D:\a\buildQt\Qt\${{env.QT_VERSION}}         Qt目录源代码和build文件夹存放目录
-        #D:\a\buildQt\Qt\${{env.QT_VERSION}}-shared  Qt安装目录
+        #D:\a\buildQt\Qt\${{env.QT_VERSION}}-static  Qt安装目录
         
         # 创建文件夹
         cd ..  #Directory: D:\a\buildQt
@@ -55,7 +55,7 @@ jobs:
         # 创建文件夹
         cd Qt   #Directory: D:\a\buildQt\Qt
         mkdir -p ${{env.QT_VERSION}}
-        mkdir -p ${{env.QT_VERSION}}-shared
+        mkdir -p ${{env.QT_VERSION}}-static
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
         curl -L -o qtbase-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtbase-everywhere-src-${{env.QT_VERSION}}.zip
@@ -74,7 +74,7 @@ jobs:
     - name: Package binaries
       run: |
         #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
-        7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-shared -mx=9
+        7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-static -mx=9
 
     # 上传
     - uses: actions/upload-artifact@v4
