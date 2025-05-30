@@ -1,13 +1,13 @@
-name: build_Qt5.15.16_MinGW64(unavailable)
+name: build_Qt5.15.17_MinGW64(unavailable)
 
-# 暂不可用，请先使用build_Qt5.15.16_MinGW810_64
-# Qt5.15.16官方使用MinGW810_64 OK，本次使用MinGW1510_64_UCRT，暂不可用
+# 暂不可用，请先使用build_Qt5.15.17_MinGW810_64
+# Qt5.15.17官方使用MinGW810_64 OK，本次使用MinGW1510_64_UCRT，暂不可用
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 5.15.16
+  QT_VERSION: 5.15.17
   QT_VERSION2: 5.15
   FILE_NAME: static-Release_mingw1510_64_UCRT
 
