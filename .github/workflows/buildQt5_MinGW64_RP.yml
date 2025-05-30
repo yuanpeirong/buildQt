@@ -1,4 +1,7 @@
-name: build_Qt5.15.17_MinGW64_RP
+name: build_Qt5.15.17_MinGW64_RP(unavailable)
+
+# 暂不可用，请先使用build_Qt5.15.17_MinGW810_64
+# Qt5.15.17官方使用MinGW810_64 OK，本次使用MinGW1510_64_UCRT，暂不可用
 
 on: workflow_dispatch
 #on: [push, pull_request]
