@@ -31,7 +31,7 @@ jobs:
     - name: Setup Perl
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54001_64bit_UCRT/strawberry-perl-5.40.0.1-64bit-portable.zip
+        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54201_64bit/strawberry-perl-5.42.0.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
     # 安装 MinGW64    
