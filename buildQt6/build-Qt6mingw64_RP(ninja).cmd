@@ -5,7 +5,7 @@
 SET QT_VERSION=6.9.1
 
 :: 设置MinGW版本代号
-SET MinGW_VERSION=mingw1510_64_UCRT_RP
+SET MinGW_VERSION=mingw1520_64_UCRT_RP
 
 :: 设置编译器和Ninja
 SET PATH=D:\a\buildQt\mingw64\bin;D:\a\buildQt\ninja;%PATH%
