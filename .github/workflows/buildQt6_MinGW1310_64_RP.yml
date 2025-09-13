@@ -1,10 +1,10 @@
-name: build_Qt6.9.1_MinGW1310_64_RP
+name: build_Qt6.9.2_MinGW1310_64_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.9.1
+  QT_VERSION: 6.9.2
   QT_VERSION2: 6.9
   FILE_NAME: static-Release_mingw1310_64_RP
 
