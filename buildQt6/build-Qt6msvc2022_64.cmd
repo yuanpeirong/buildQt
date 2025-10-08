@@ -2,7 +2,7 @@
 @cd /d %~dp0
 
 :: 设置Qt版本
-SET QT_VERSION=6.9.2
+SET QT_VERSION=6.9.3
 
 :: 设置MSVC版本代号
 SET MSVC_VERSION=msvc2022_64
