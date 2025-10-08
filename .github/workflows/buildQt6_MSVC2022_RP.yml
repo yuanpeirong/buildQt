@@ -1,10 +1,10 @@
-name: build_Qt6.9.2_msvc2022_RP
+name: build_Qt6.9.3_msvc2022_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.9.2
+  QT_VERSION: 6.9.3
   QT_VERSION2: 6.9
   FILE_NAME: static-Release_msvc2022_64_RP
 
