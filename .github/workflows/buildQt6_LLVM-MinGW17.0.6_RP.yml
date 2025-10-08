@@ -81,3 +81,10 @@ jobs:
       with:
         name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
         path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
+    # 发布
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
