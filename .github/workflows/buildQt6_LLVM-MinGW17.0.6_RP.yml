@@ -85,6 +85,7 @@ jobs:
     # 发布
     - name: Release
       uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
       with:
         files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
 

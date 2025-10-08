@@ -1,0 +1,33 @@
+name: test
+
+on: workflow_dispatch
+#on: [push, pull_request]
+
+jobs:
+  windows_llvm-mingw_static_release:
+    runs-on: windows-latest
+
+    steps:
+    # 检出本仓库
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 打包
+    - name: Package binaries
+      run: |
+        #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
+        7z a test.7z . -mx=9
+
+    # 上传
+    - uses: actions/upload-artifact@v4
+      with:
+        name: test
+        path: test.7z
+
+    # 发布
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+        files: test.7z
+
