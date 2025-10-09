@@ -75,3 +75,11 @@ jobs:
       with:
         name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
         path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
+    # 发布
+    - name: TempRelease
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: temp_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        release_name: TempRelease_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
