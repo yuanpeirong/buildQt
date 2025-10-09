@@ -27,7 +27,6 @@ jobs:
     # 发布
     - name: Release
       uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag'
       with:
         tag_name: v1.0.0t
         release_name: Release v1.0.0
