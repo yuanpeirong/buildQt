@@ -1,11 +1,11 @@
-name: build_Qt6.9.3_LLVM-MinGW_RP
+name: build_Qt6.10.0_LLVM-MinGW_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.9.3
-  QT_VERSION2: 6.9
+  QT_VERSION: 6.10.0
+  QT_VERSION2: '6.10'
   FILE_NAME: static-Release_llvm-mingw21.1.3_64_UCRT_RP
 
 jobs:
