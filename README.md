@@ -25,14 +25,14 @@
 2. Qt6.10.0 MinGW1310_64               (使用Qt官方默认编译器版本)
 3. Qt6.10.0 MinGW1520_64(UCRT)    
 4. Qt6.10.0 LLVM-MinGW17.0.6(UCRT)     (使用Qt官方默认编译器版本)
-5. Qt6.10.0 LLVM-MinGW21.1.2(UCRT)
+5. Qt6.10.0 LLVM-MinGW21.1.3(UCRT)
 
 ## Qt6.10.0 RP版本
 1. Qt6.10.0 msvc2022_64_RP
 2. Qt6.10.0 MinGW1310_64_RP            (使用Qt官方默认编译器版本)
 3. Qt6.10.0 MinGW1520_64_RP(UCRT)
 4. Qt6.10.0 LLVM-MinGW17.0.6_RP(UCRT)  (使用Qt官方默认编译器版本)
-5. Qt6.10.0 LLVM-MinGW21.1.2_RP(UCRT)
+5. Qt6.10.0 LLVM-MinGW21.1.3_RP(UCRT)
 
 ## Qt5.15.17 完整版本(64位)
 1. Qt5.15.17 msvc2022_64     
