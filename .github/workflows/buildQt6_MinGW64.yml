@@ -1,10 +1,10 @@
-name: build_Qt6.10.0_MinGW64
+name: build_Qt6.10.1_MinGW64
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.10.0
+  QT_VERSION: 6.10.1
   QT_VERSION2: '6.10'
   FILE_NAME: static-Release_mingw1520_64_UCRT
 
