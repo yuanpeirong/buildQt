@@ -1,10 +1,10 @@
-name: build_Qt6.10.0_LLVM-MinGW17.0.6_RP
+name: build_Qt6.10.1_LLVM-MinGW17.0.6_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.10.0
+  QT_VERSION: 6.10.1
   QT_VERSION2: '6.10'
   FILE_NAME: static-Release_llvm-mingw17.0.6_64_UCRT_RP
 
