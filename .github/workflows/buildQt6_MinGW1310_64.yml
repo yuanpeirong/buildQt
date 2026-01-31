@@ -36,7 +36,7 @@ jobs:
       run: |
         cd ..  #Directory: D:\a\buildQt
         mkdir -p ninja
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.1/ninja-win.zip
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
         unzip -q ninja.zip -d ./ninja
 
     # 构建Qt
