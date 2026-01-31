@@ -15,7 +15,7 @@ jobs:
     steps:
     # 检出本仓库
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     # 安装python
     - name: Setup Python
