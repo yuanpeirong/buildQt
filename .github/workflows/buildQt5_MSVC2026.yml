@@ -1,4 +1,4 @@
-name: build_Qt5.15.19_msvc2022_32
+name: build_Qt5.15.19_msvc2026
 
 on: workflow_dispatch
 #on: [push, pull_request]
@@ -6,11 +6,11 @@ on: workflow_dispatch
 env:
   QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
-  FILE_NAME: static-Release_msvc2022_32
+  FILE_NAME: static-Release_msvc2022_64
 
 jobs:
   windows_msvc_static_release:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
     # 检出本仓库
@@ -42,7 +42,7 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
       with:
-        msbuild-architecture: x86
+        msbuild-architecture: x64
 
     # 安装vsdevenv
     - name: Setup vsdevenv
@@ -71,7 +71,7 @@ jobs:
         unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5msvc2022_32.cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5msvc2022_64.cmd`""
 
     # 打包
     - name: Package binaries

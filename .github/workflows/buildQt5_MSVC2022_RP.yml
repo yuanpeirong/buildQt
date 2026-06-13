@@ -1,16 +1,16 @@
-name: build_Qt5.15.18_msvc2022_RP
+name: build_Qt5.15.19_msvc2022_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 5.15.18
+  QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
   FILE_NAME: static-Release_msvc2022_64_RP
 
 jobs:
   windows_msvc_static_release:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     # 检出本仓库
