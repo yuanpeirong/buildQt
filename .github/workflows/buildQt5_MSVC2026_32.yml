@@ -6,7 +6,7 @@ on: workflow_dispatch
 env:
   QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
-  FILE_NAME: static-Release_msvc2022_32
+  FILE_NAME: static-Release_msvc2026_32
 
 jobs:
   windows_msvc_static_release:
@@ -71,7 +71,7 @@ jobs:
         unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5msvc2022_32.cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5msvc2026_32.cmd`""
 
     # 打包
     - name: Package binaries
