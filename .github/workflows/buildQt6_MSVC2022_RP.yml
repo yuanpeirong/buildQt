@@ -10,7 +10,7 @@ env:
 
 jobs:
   windows_msvc_static_release:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     # 检出本仓库

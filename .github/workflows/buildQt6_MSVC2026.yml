@@ -1,4 +1,4 @@
-name: build_Qt6.10.3_msvc2022
+name: build_Qt6.10.3_msvc2026
 
 on: workflow_dispatch
 #on: [push, pull_request]
@@ -6,11 +6,11 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.10.3
   QT_VERSION2: '6.10'
-  FILE_NAME: static-Release_msvc2022_64
+  FILE_NAME: static-Release_msvc2026_64
 
 jobs:
   windows_msvc_static_release:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
     # 检出本仓库
@@ -57,7 +57,7 @@ jobs:
         unzip -q qt-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6msvc2022_64.cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6msvc2026_64.cmd`""
 
     # 打包
     - name: Package binaries
