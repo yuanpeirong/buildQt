@@ -1,4 +1,4 @@
-name: build_Qt5.15.19_msvc2022_32
+name: build_Qt5.15.19_msvc2026_32
 
 on: workflow_dispatch
 #on: [push, pull_request]
@@ -10,7 +10,7 @@ env:
 
 jobs:
   windows_msvc_static_release:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
     # 检出本仓库
