@@ -5,10 +5,10 @@
 SET QT_VERSION=5.15.19
 
 :: 设置MSVC版本代号
-SET MSVC_VERSION=msvc2022_64
+SET MSVC_VERSION=msvc2026_64
 
-:: 设置MSVC2022环境
-CALL "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+:: 设置MSVC2026环境
+CALL "C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 :: 设置jom和Perl
 SET PATH=D:\a\buildQt\jom;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%

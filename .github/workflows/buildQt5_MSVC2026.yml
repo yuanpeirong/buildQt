@@ -1,4 +1,4 @@
-name: build_Qt5.15.19_MinGW810_64_RP
+name: build_Qt5.15.19_msvc2026
 
 on: workflow_dispatch
 #on: [push, pull_request]
@@ -6,10 +6,10 @@ on: workflow_dispatch
 env:
   QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
-  FILE_NAME: shared-Release_mingw810_64_RP
+  FILE_NAME: shared-Release_msvc2026_64
 
 jobs:
-  windows_mingw64_shared_release:
+  windows_msvc_shared_release:
     runs-on: windows-latest
 
     steps:
@@ -31,13 +31,22 @@ jobs:
         curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
-    # 安装 MinGW810_64    
-    - name: Setup MinGW64
+    # 安装 jom
+    - name: Setup jom
       run: |
         cd ..  #Directory: D:\a\buildQt
-        mkdir -p mingw64
-        curl -L -o 8.1.0-release-posix-seh.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw81/qt.tools.win64_mingw810/8.1.0-1-202411201005x86_64-8.1.0-gdb-11.2.0-release-posix-seh-rt_v6-rev0.7z
-        7z x D:\a\buildQt\8.1.0-release-posix-seh.7z -oD:\a\buildQt\mingw64
+        curl -L -o jom.zip  http://download.qt.io/official_releases/jom/jom.zip
+        unzip -q jom.zip -d ./jom
+
+    # 安装msvc
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v3
+      with:
+        msbuild-architecture: x64
+
+    # 安装vsdevenv
+    - name: Setup vsdevenv
+      uses: seanmiddleditch/gha-setup-vsdevenv@master
 
     # 构建Qt
     - name: Build Qt
@@ -58,17 +67,11 @@ jobs:
         mkdir -p ${{env.QT_VERSION}}-shared
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
-        curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtbase-everywhere-opensource-src-${{env.QT_VERSION}}.zip
-        unzip -q qtbase-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qttools-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttools-everywhere-opensource-src-${{env.QT_VERSION}}.zip
-        unzip -q qttools-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qttranslations-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttranslations-everywhere-opensource-src-${{env.QT_VERSION}}.zip
-        unzip -q qttranslations-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qtsvg-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-opensource-src-${{env.QT_VERSION}}.zip
-        unzip -q qtsvg-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+        curl -L -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5mingw810_64_RP.cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5msvc2026_64.cmd`""
 
     # 打包
     - name: Package binaries
