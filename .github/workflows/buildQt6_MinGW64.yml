@@ -6,7 +6,7 @@ on: workflow_dispatch
 env:
   QT_VERSION: 6.10.3
   QT_VERSION2: '6.10'
-  FILE_NAME: static-Release_mingw1520_64_UCRT
+  FILE_NAME: static-Release_mingw1610_64_UCRT
 
 jobs:
   windows_mingw64_static_release:
