@@ -1,25 +1,25 @@
-name: build_Qt5.15.16_msvc2022_32
+name: build_Qt5.15.19_msvc2022_32
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 5.15.16
+  QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
   FILE_NAME: shared-Release_msvc2022_32
 
 jobs:
   windows_msvc_shared_release:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     # 检出本仓库
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     # 安装python
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.13'
         architecture: 'x64'
@@ -28,7 +28,7 @@ jobs:
     - name: Setup Perl
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54001_64bit_UCRT/strawberry-perl-5.40.0.1-64bit-portable.zip
+        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
     # 安装 jom
@@ -40,7 +40,7 @@ jobs:
 
     # 安装msvc
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v2
+      uses: microsoft/setup-msbuild@v3
       with:
         msbuild-architecture: x86
 
@@ -80,7 +80,15 @@ jobs:
         7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-shared -mx=9
 
     # 上传
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
         path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
+    # 发布
+    - name: TempRelease
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: temp_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        release_name: TempRelease_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
