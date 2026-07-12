@@ -10,6 +10,9 @@ SET MSVC_VERSION=msvc2026_64
 :: 设置MSVC2026环境
 CALL "C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
+:: 设置Ninja
+SET PATH=D:\a\buildQt\ninja;%PATH%
+
 :: 设置Qt文件夹路径
 SET QT_PATH=D:\a\buildQt\Qt
 
