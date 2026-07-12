@@ -35,8 +35,8 @@ call %SRC_QT%\configure.bat -static -static-runtime -release -prefix %INSTALL_DI
 :: 编译(不要忘记点)
 cmake --build . --parallel
 
-:: 安装(不要忘记点)
-cmake --install .
+:: 安装(取代cmake --install .)
+ninja install
 
 ::复制qt.conf
 copy %~dp0\qt.conf %INSTALL_DIR%\bin
