@@ -62,7 +62,7 @@ jobs:
         unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5mingw810_64`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5mingw810_64.cmd`""
 
     # 打包
     - name: Package binaries
