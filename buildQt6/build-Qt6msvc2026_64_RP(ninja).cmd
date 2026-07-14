@@ -2,7 +2,7 @@
 @cd /d %~dp0
 
 :: 设置Qt版本
-SET QT_VERSION=6.11.1
+SET QT_VERSION=6.10.3
 
 :: 设置MSVC版本代号
 SET MSVC_VERSION=msvc2026_64_RP
@@ -38,7 +38,7 @@ mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 ::编译qtbase
 mkdir build-qtbase
 cd build-qtbase
-call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc
+call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc -- -G Ninja -DQT_BUILD_SBOM=OFF -DQT_GENERATE_SBOM=OFF
 cmake --build . --parallel
 ninja install
 cd ..
@@ -46,7 +46,7 @@ cd ..
 ::编译qttools
 mkdir build-qttools
 cd build-qttools
-cmake %SRC_qttools% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
+cmake %SRC_qttools% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% -DQT_BUILD_SBOM=OFF -DQT_GENERATE_SBOM=OFF -DFEATURE_clangcpp=OFF
 cmake --build . --parallel
 ninja install
 cd ..
@@ -54,7 +54,7 @@ cd ..
 ::编译qttranslations
 mkdir build-qttranslations
 cd build-qttranslations
-cmake %SRC_qttranslations% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
+cmake %SRC_qttranslations% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% -DQT_BUILD_SBOM=OFF -DQT_GENERATE_SBOM=OFF
 cmake --build . --parallel
 ninja install
 cd ..
@@ -62,7 +62,7 @@ cd ..
 ::编译qtsvg
 mkdir build-qtsvg
 cd build-qtsvg
-cmake %SRC_qtsvg% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
+cmake %SRC_qtsvg% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% -DQT_BUILD_SBOM=OFF -DQT_GENERATE_SBOM=OFF
 cmake --build . --parallel
 ninja install
 cd ..

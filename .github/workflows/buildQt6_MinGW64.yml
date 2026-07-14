@@ -4,8 +4,8 @@ on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.11.1
-  QT_VERSION2: '6.11'
+  QT_VERSION: 6.10.3
+  QT_VERSION2: '6.10'
   FILE_NAME: static-Release_mingw1610_64_UCRT
 
 jobs:
