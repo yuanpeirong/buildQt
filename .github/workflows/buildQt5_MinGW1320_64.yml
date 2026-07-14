@@ -1,0 +1,84 @@
+name: build_Qt5.15.19_MinGW1320_64
+
+on: workflow_dispatch
+#on: [push, pull_request]
+
+env:
+  QT_VERSION: 5.15.19
+  QT_VERSION2: 5.15
+  FILE_NAME: static-Release_mingw1320_64_UCRT
+
+jobs:
+  windows_mingw64_static_release:
+    runs-on: windows-latest
+
+    steps:
+    # 检出本仓库
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    # 安装python
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+        architecture: 'x64'
+
+    # 安装 Perl    
+    - name: Setup Perl
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
+        unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
+
+    # 安装 MinGW1320_64    
+    - name: Setup MinGW64
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        curl -L -o x86_64-release-posix-seh-ucrt.7z https://github.com/niXman/mingw-builds-binaries/releases/download/13.2.0-rt_v11-rev1/x86_64-13.2.0-release-posix-seh-ucrt-rt_v11-rev1.7z
+        7z x D:\a\buildQt\x86_64-release-posix-seh-ucrt.7z -oD:\a\buildQt
+
+    # 构建Qt
+    - name: Build Qt
+      run: |
+        #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
+        #D:\a\buildQt                                上级目录，这里当做根目录
+        #D:\a\buildQt\Qt                             Qt目录
+        #D:\a\buildQt\Qt\${{env.QT_VERSION}}         Qt目录源代码和build文件夹存放目录
+        #D:\a\buildQt\Qt\${{env.QT_VERSION}}-static  Qt安装目录
+        
+        # 创建文件夹
+        cd ..  #Directory: D:\a\buildQt
+        mkdir -p Qt
+
+        # 创建文件夹
+        cd Qt   #Directory: D:\a\buildQt\Qt
+        mkdir -p ${{env.QT_VERSION}}
+        mkdir -p ${{env.QT_VERSION}}-static
+
+        # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
+        curl -L -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+
+        # 调用编译脚本
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5mingw1320_64.cmd`""
+
+    # 打包
+    - name: Package binaries
+      run: |
+        #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
+        7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-static -mx=9
+
+    # 上传
+    - uses: actions/upload-artifact@v7
+      with:
+        name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
+    # 发布
+    - name: TempRelease
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: temp_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        release_name: TempRelease_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
