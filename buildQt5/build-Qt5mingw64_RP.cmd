@@ -26,7 +26,7 @@ SET SRC_qtsvg="%QT_PATH%\%QT_VERSION%\qtsvg-everywhere-src-%QT_VERSION%"
 
 ::替换qfilesystemengine_win.cpp、main.c(使其可以被高于MinGW GCC8.1.0版本编译)
 copy %~dp0\qfilesystemengine_win.cpp %SRC_qtbase%\src\corelib\io\qfilesystemengine_win.cpp /Y
-copy %~dp0\main.c %SRC_qttools%\qttools\src\assistant\qcollectiongenerator\main.c /Y
+copy %~dp0\main.c %SRC_qttools%\src\assistant\qcollectiongenerator\main.c /Y
 
 :: 设置安装文件夹目录
 SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-static\%MinGW_VERSION%"

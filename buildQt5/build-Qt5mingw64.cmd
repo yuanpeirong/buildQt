@@ -23,7 +23,7 @@ SET SRC_QT="%QT_PATH%\%QT_VERSION%\qt-everywhere-src-%QT_VERSION%"
 
 ::替换qfilesystemengine_win.cpp、main.c(使其可以被高于MinGW GCC8.1.0版本编译)
 copy %~dp0\qfilesystemengine_win.cpp %SRC_QT%\qtbase\src\corelib\io\qfilesystemengine_win.cpp /Y
-copy %~dp0\main.c %SRC_QT%\src\assistant\qcollectiongenerator\main.c /Y
+copy %~dp0\main.c %SRC_QT%\qttools\src\assistant\qcollectiongenerator\main.c /Y
 
 :: 补充设置qtbase\bin和gnuwin32\bin
 SET PATH=%SRC_QT%\qtbase\bin;%SRC_QT%\gnuwin32\bin;%PATH%
