@@ -65,6 +65,9 @@
 9. Qt5.15.19 MinGW1520_64_RP(UCRT)
 10. Qt5.15.19 MinGW1610_64_RP(UCRT)
 
+## Qt5.15.19 RP版本(32位)
+1. Qt5.15.19 MinGW810_32_RP            (使用Qt5.15官方默认编译器版本)
+
 ## Qt6.11.1 编译器(rev1)
 1. **msvc2022_64**：Visual Studio 2022 Developer Command Prompt v17.14.35
 2. **msvc2026_64**：Visual Studio 2026 Developer Command Prompt v18.7.2

@@ -1,0 +1,91 @@
+name: build_Qt5.15.19_MinGW810_32_RP
+
+on: workflow_dispatch
+#on: [push, pull_request]
+
+env:
+  QT_VERSION: 5.15.19
+  QT_VERSION2: 5.15
+  FILE_NAME: static-Release_mingw810_32_RP
+
+jobs:
+  windows_mingw32_static_release:
+    runs-on: windows-latest
+
+    steps:
+    # 检出本仓库
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    # 安装python
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+        architecture: 'x64'
+
+    # 安装 Perl    
+    - name: Setup Perl
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54221_64bit/strawberry-perl-5.42.2.1-64bit-portable.zip
+        unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
+
+    # 安装 MinGW810_32    
+    - name: Setup MinGW32
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        mkdir -p mingw32
+        curl -L -o 8.1.0-release-posix-seh.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw81/qt.tools.win32_mingw810/8.1.0-1-202411201005i686-8.1.0-gdb-11.2.0-release-posix-dwarf-rt_v6-rev0.7z
+        7z x D:\a\buildQt\8.1.0-release-posix-seh.7z -oD:\a\buildQt\mingw32
+
+    # 构建Qt
+    - name: Build Qt
+      run: |
+        #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
+        #D:\a\buildQt                                上级目录，这里当做根目录
+        #D:\a\buildQt\Qt                             Qt目录
+        #D:\a\buildQt\Qt\${{env.QT_VERSION}}         Qt目录源代码和build文件夹存放目录
+        #D:\a\buildQt\Qt\${{env.QT_VERSION}}-static  Qt安装目录
+        
+        # 创建文件夹
+        cd ..  #Directory: D:\a\buildQt
+        mkdir -p Qt
+
+        # 创建文件夹
+        cd Qt   #Directory: D:\a\buildQt\Qt
+        mkdir -p ${{env.QT_VERSION}}
+        mkdir -p ${{env.QT_VERSION}}-static
+
+        # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
+        curl -L -o qtbase-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtbase-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qtbase-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+        curl -L -o qttools-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttools-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qttools-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+        curl -L -o qttranslations-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttranslations-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qttranslations-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+        curl -L -o qtsvg-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        unzip -q qtsvg-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
+
+        # 调用编译脚本
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt5\build-Qt5mingw810_32_RP.cmd`""
+
+    # 打包
+    - name: Package binaries
+      run: |
+        #ls     #Directory: D:\a\buildQt\buildQt(即仓库目录)
+        7z a Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z ../Qt/${{env.QT_VERSION}}-static -mx=9
+
+    # 上传
+    - uses: actions/upload-artifact@v7
+      with:
+        name: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        path: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
+
+    # 发布
+    - name: TempRelease
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: temp_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        release_name: TempRelease_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
+        files: Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}.7z
