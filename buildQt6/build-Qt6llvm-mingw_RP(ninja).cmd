@@ -5,10 +5,10 @@
 SET QT_VERSION=6.11.2
 
 :: 设置LLVM-MinGW版本代号
-SET MinGW_VERSION=llvm-mingw22.1.8_64_UCRT_RP
+SET MinGW_VERSION=llvm-mingw23.1.5_64_UCRT_RP
 
 :: 设置编译器、Ninja、Perl
-SET PATH=D:\a\buildQt\llvm-mingw-20260616-ucrt-x86_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
+SET PATH=D:\a\buildQt\llvm-mingw-20261104-ucrt-x86_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
 
 :: 设置Qt文件夹路径
 SET QT_PATH=D:\a\buildQt\Qt
