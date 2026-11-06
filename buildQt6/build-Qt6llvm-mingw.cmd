@@ -10,6 +10,9 @@ SET LLVM_MinGW_VERSION=llvm-mingw23.1.5_64_UCRT
 :: 设置编译器、Ninja、Perl
 SET PATH=D:\a\buildQt\llvm-mingw-20261104-ucrt-x86_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
 
+:: 补丁：libc++ 23 精简头文件传递依赖，强制包含 cstdlib（修复 litehtml 等代码缺失的 atoi 等函数声明，Qt configure 会读取 CXXFLAGS 附加到编译参数）
+SET CXXFLAGS=-include cstdlib
+
 :: 设置Qt文件夹路径
 SET QT_PATH=D:\a\buildQt\Qt
 
