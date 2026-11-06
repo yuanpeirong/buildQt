@@ -1,7 +1,7 @@
 name: build_Qt6.12.0_MinGW1510_64_RP
 
-#on: workflow_dispatch
-on: [push, pull_request]
+on: workflow_dispatch
+#on: [push, pull_request]
 
 env:
   QT_VERSION: 6.12.0
