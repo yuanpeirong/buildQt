@@ -1,10 +1,10 @@
-name: build_Qt6.11.2_LLVM-MinGW
+name: build_Qt6.11.3_LLVM-MinGW
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.11.2
+  QT_VERSION: 6.11.3
   QT_VERSION2: '6.11'
   FILE_NAME: static-Release_llvm-mingw23.1.5_64_UCRT
 
@@ -67,6 +67,15 @@ jobs:
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
         curl -L -o qt-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qt-everywhere-src.zip -d ./${{env.QT_VERSION}}
+
+        # 补丁：releasehelper.h 缺少 #include <vector>（libc++ 23 精简头文件依赖暴露，上游已修复，6.11.3/6.12.0 源码包未包含）
+        $h = "D:\a\buildQt\Qt\${{env.QT_VERSION}}\qt-everywhere-src-${{env.QT_VERSION}}\qttools\src\linguist\shared\releasehelper.h"
+        if (Test-Path $h) {
+          $c = Get-Content $h -Raw
+          $c = $c.Replace('#include <QtCore/qstringlist.h>', "#include <QtCore/qstringlist.h>`r`n#include <vector>")
+          Set-Content $h $c -NoNewline
+          Write-Host "releasehelper.h patched"
+        } else { Write-Host "releasehelper.h not found, skip patch" }
 
         # 调用编译脚本
         cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw.cmd`""
