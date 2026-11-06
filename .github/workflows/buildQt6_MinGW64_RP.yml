@@ -15,11 +15,11 @@ jobs:
     steps:
     # 检出本仓库
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     # 安装python
     - name: Setup Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: '3.13'
         architecture: 'x64'
@@ -91,7 +91,7 @@ jobs:
 
     # 发布
     - name: TempRelease
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: temp_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
         release_name: TempRelease_Qt_${{env.QT_VERSION}}-${{env.FILE_NAME}}
