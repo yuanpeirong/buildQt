@@ -74,6 +74,12 @@ jobs:
         curl -L -o qtsvg-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qtsvg-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
+        # 补丁：releasehelper.h 缺少 #include <vector>（libc++ 23 精简头文件依赖暴露，上游已修复，6.11.3/6.12.0 源码包未包含）
+        $h = "D:\a\buildQt\Qt\${{env.QT_VERSION}}\qttools-everywhere-src-${{env.QT_VERSION}}\src\linguist\shared\releasehelper.h"
+        $c = Get-Content $h -Raw
+        $c = $c.Replace('#include <QtCore/qstringlist.h>', "#include <QtCore/qstringlist.h>`r`n#include <vector>")
+        Set-Content $h $c -NoNewline
+
         # 调用编译脚本
         cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw_RP(ninja).cmd`""
 
