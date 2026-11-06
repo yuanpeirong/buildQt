@@ -4,11 +4,11 @@
 :: 设置Qt版本
 SET QT_VERSION=6.12.0
 
-:: 设置LLVM-MinGW版本代号
-SET MinGW_VERSION=llvm-mingw17.0.6_64_UCRT_RP
+:: 设置MinGW版本代号
+SET MinGW_VERSION=mingw1510_64_RP
 
 :: 设置编译器、Ninja、Perl
-SET PATH=D:\a\buildQt\Tools\llvm-mingw1706_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
+SET PATH=D:\a\buildQt\Tools\mingw1510_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
 
 :: 设置Qt文件夹路径
 SET QT_PATH=D:\a\buildQt\Qt
@@ -35,7 +35,7 @@ mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 ::编译qtbase
 mkdir build-qtbase
 cd build-qtbase
-call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop
+call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++
 cmake --build . --parallel
 ninja install
 cd ..
