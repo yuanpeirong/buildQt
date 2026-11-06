@@ -1,11 +1,11 @@
-name: build_Qt6.11.2_msvc2026_RP
+name: build_Qt6.12.0_msvc2026_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.11.2
-  QT_VERSION2: '6.11'
+  QT_VERSION: 6.12.0
+  QT_VERSION2: '6.12'
   FILE_NAME: static-Release_msvc2026_64_RP
 
 jobs:
