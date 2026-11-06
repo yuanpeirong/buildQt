@@ -2,13 +2,13 @@
 @cd /d %~dp0
 
 :: 设置Qt版本
-SET QT_VERSION=6.11.3
+SET QT_VERSION=6.12.0
 
 :: 设置MinGW版本代号
-SET MinGW_VERSION=mingw1310_64
+SET MinGW_VERSION=mingw1510_64
 
 :: 设置编译器、Ninja、Perl
-SET PATH=D:\a\buildQt\Tools\mingw1310_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
+SET PATH=D:\a\buildQt\Tools\mingw1510_64\bin;D:\a\buildQt\ninja;D:\a\buildQt\Strawberry\c\bin;D:\a\buildQt\Strawberry\perl\site\bin;D:\a\buildQt\Strawberry\perl\bin;%PATH%
 
 :: 设置Qt文件夹路径
 SET QT_PATH=D:\a\buildQt\Qt

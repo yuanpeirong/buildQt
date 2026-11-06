@@ -1,11 +1,11 @@
-name: build_Qt6.11.3_LLVM-MinGW_RP
+name: build_Qt6.12.0_LLVM-MinGW_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.11.3
-  QT_VERSION2: '6.11'
+  QT_VERSION: 6.12.0
+  QT_VERSION2: '6.12'
   FILE_NAME: static-Release_llvm-mingw23.1.5_64_UCRT_RP
 
 jobs:
@@ -74,11 +74,29 @@ jobs:
         curl -L -o qtsvg-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qtsvg-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
-        # 补丁：releasehelper.h 缺少 #include <vector>（libc++ 23 精简头文件依赖暴露，上游已修复，6.11.3/6.12.0 源码包未包含）
-        $h = "D:\a\buildQt\Qt\${{env.QT_VERSION}}\qttools-everywhere-src-${{env.QT_VERSION}}\src\linguist\shared\releasehelper.h"
-        $c = Get-Content $h -Raw
-        $c = $c.Replace('#include <QtCore/qstringlist.h>', "#include <QtCore/qstringlist.h>`r`n#include <vector>")
-        Set-Content $h $c -NoNewline
+        # 补丁：libc++ 23 精简头文件传递依赖的补偿（上游源码缺显式 include，6.11.3/6.12.0 源码包未包含修复）
+        $src = "D:\a\buildQt\Qt\${{env.QT_VERSION}}\qttools-everywhere-src-${{env.QT_VERSION}}\src"
+        # 1) releasehelper.h：在 qstringlist.h 后补 #include <vector>
+        $h = "$src\linguist\shared\releasehelper.h"
+        if (Test-Path $h) {
+          $c = Get-Content $h -Raw
+          if ($c -notmatch 'include\s*<vector>') {
+            $c = $c.Replace('#include <QtCore/qstringlist.h>', "#include <QtCore/qstringlist.h>`r`n#include <vector>")
+            Set-Content $h $c -NoNewline
+            Write-Host "patched: releasehelper.h"
+          }
+        } else { Write-Host "skip: releasehelper.h not found" }
+        # 2) litehtml：文件开头补 #include <cstdlib>（atoi 等 stdlib 函数声明缺失，本地扫描共 9 个文件）
+        foreach ($n in @('css_selector.cpp','el_before_after.cpp','el_font.cpp','element.cpp','html_microsyntaxes.cpp','html_tag.cpp','render_block.cpp','table.cpp','url.cpp')) {
+          $f = "$src\assistant\qlitehtml\src\3rdparty\litehtml\src\$n"
+          if (Test-Path $f) {
+            $c = Get-Content $f -Raw
+            if ($c -notmatch 'include\s*<cstdlib>') {
+              Set-Content $f ("#include <cstdlib>`r`n" + $c) -NoNewline
+              Write-Host "patched: litehtml/$n"
+            }
+          } else { Write-Host "skip: litehtml/$n not found" }
+        }
 
         # 调用编译脚本
         cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw_RP(ninja).cmd`""

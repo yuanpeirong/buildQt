@@ -1,15 +1,15 @@
-name: build_Qt6.11.3_MinGW1310_64_RP
+name: build_Qt6.12.0_LLVM-MinGW22.1.7_RP
 
 on: workflow_dispatch
 #on: [push, pull_request]
 
 env:
-  QT_VERSION: 6.11.3
-  QT_VERSION2: '6.11'
-  FILE_NAME: static-Release_mingw1310_64_RP
+  QT_VERSION: 6.12.0
+  QT_VERSION2: '6.12'
+  FILE_NAME: static-Release_llvm-mingw22.1.7_64_UCRT_RP
 
 jobs:
-  windows_mingw64_static_release:
+  windows_llvm-mingw_static_release:
     runs-on: windows-latest
 
     steps:
@@ -31,12 +31,12 @@ jobs:
         curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
-    # 安装 MinGW1310_64    
-    - name: Setup MinGW64
+    # 安装 LLVM-MinGW22.1.7
+    - name: Setup LLVM-MinGW
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o mingw1310.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw1310/qt.tools.win64_mingw1310/13.1.0-202407240918mingw1310.7z
-        7z x D:\a\buildQt\mingw1310.7z -oD:\a\buildQt
+        curl -L -o llvm_mingw2217.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_llvm_mingw2217/qt.tools.win64_llvm_mingw2217/22.1.7-202608200704llvm_mingw2217.7z
+        7z x D:\a\buildQt\llvm_mingw2217.7z -oD:\a\buildQt\Tools\llvm-mingw2217_64
 
     # 安装 Ninja
     - name: Setup Ninja
@@ -75,7 +75,7 @@ jobs:
         unzip -q qtsvg-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
-        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6mingw1310_64_RP(ninja).cmd`""
+        cmd.exe /c "call `"D:\a\buildQt\buildQt\buildQt6\build-Qt6llvm-mingw22.1.7_RP(ninja).cmd`""
 
     # 打包
     - name: Package binaries
