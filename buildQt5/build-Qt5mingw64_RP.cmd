@@ -25,8 +25,8 @@ SET SRC_qttranslations="%QT_PATH%\%QT_VERSION%\qttranslations-everywhere-src-%QT
 SET SRC_qtsvg="%QT_PATH%\%QT_VERSION%\qtsvg-everywhere-src-%QT_VERSION%"
 
 ::替换qfilesystemengine_win.cpp、main.c(使其可以被高于MinGW GCC8.1.0版本编译)
-copy %~dp0\qfilesystemengine_win.cpp %SRC_qtbase%\src\corelib\io\qfilesystemengine_win.cpp /Y
-copy %~dp0\main.c %SRC_qttools%\src\assistant\qcollectiongenerator\main.c /Y
+copy %~dp0\qfilesystemengine_win.cpp %SRC_qtbase%\src\corelib\io\qfilesystemengine_win.cpp /Y || exit /b 1
+copy %~dp0\main.c %SRC_qttools%\src\assistant\qcollectiongenerator\main.c /Y || exit /b 1
 
 :: 设置安装文件夹目录
 SET INSTALL_DIR="%QT_PATH%\%QT_VERSION%-static\%MinGW_VERSION%"
@@ -38,42 +38,47 @@ SET BUILD_DIR="%QT_PATH%\%QT_VERSION%\build-%MinGW_VERSION%"
 :: 根据需要进行全新构建
 rmdir /s /q "%BUILD_DIR%"
 :: 定位到构建目录：
-mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
+mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%" || exit /b 1
 
 ::编译qtbase
 mkdir build-qtbase
 cd build-qtbase
-call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -recheck-all -opengl desktop -platform win32-g++
-mingw32-make -j%NUM_THRED%
-mingw32-make install
+call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -recheck-all -opengl desktop -platform win32-g++ || exit /b 1
+mingw32-make -j%NUM_THRED% || exit /b 1
+mingw32-make install || exit /b 1
 cd ..
 
 ::编译qttools
 mkdir build-qttools
 cd build-qttools
-%QMAKE_PATH% %SRC_qttools%\qttools.pro
-mingw32-make -j%NUM_THRED%
-mingw32-make install
+%QMAKE_PATH% %SRC_qttools%\qttools.pro || exit /b 1
+mingw32-make -j%NUM_THRED% || exit /b 1
+mingw32-make install || exit /b 1
 cd ..
 
 ::编译qttranslations
 mkdir build-qttranslations
 cd build-qttranslations
-%QMAKE_PATH% %SRC_qttranslations%\qttranslations.pro
-mingw32-make -j%NUM_THRED%
-mingw32-make install
+%QMAKE_PATH% %SRC_qttranslations%\qttranslations.pro || exit /b 1
+mingw32-make -j%NUM_THRED% || exit /b 1
+mingw32-make install || exit /b 1
 cd ..
 
 ::编译qtsvg
 mkdir build-qtsvg
 cd build-qtsvg
-%QMAKE_PATH% %SRC_qtsvg%\qtsvg.pro
-mingw32-make -j%NUM_THRED%
-mingw32-make install
+%QMAKE_PATH% %SRC_qtsvg%\qtsvg.pro || exit /b 1
+mingw32-make -j%NUM_THRED% || exit /b 1
+mingw32-make install || exit /b 1
 cd ..
 
 ::复制qt.conf
-copy %~dp0\qt.conf %INSTALL_DIR%\bin
+copy %~dp0\qt.conf %INSTALL_DIR%\bin || exit /b 1
 
 ::@pause
-@cmd /k cd /d %INSTALL_DIR%
+:: 校验构建产物完整性(防止构建失败后发布残缺包)
+set CHECK_QMAKE=%INSTALL_DIR:"=%
+if not exist "%CHECK_QMAKE%\bin\qmake.exe" (
+    echo [ERROR] qmake.exe not found in INSTALL_DIR\bin, build failed.
+    exit /b 1
+)

@@ -39,7 +39,7 @@ jobs:
       run: |
         cd ..  #Directory: D:\a\buildQt
         mkdir -p ninja
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
         unzip -q ninja.zip -d ./ninja
 
     # 构建Qt
@@ -61,13 +61,13 @@ jobs:
         mkdir -p ${{env.QT_VERSION}}-static
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
-        curl -L -o qtbase-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtbase-everywhere-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qtbase-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtbase-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qtbase-everywhere-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qttools-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttools-everywhere-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qttools-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttools-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qttools-everywhere-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qttranslations-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttranslations-everywhere-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qttranslations-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qttranslations-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qttranslations-everywhere-src.zip -d ./${{env.QT_VERSION}}
-        curl -L -o qtsvg-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qtsvg-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/submodules/qtsvg-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qtsvg-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
