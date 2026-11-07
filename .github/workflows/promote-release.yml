@@ -1,0 +1,78 @@
+name: promote temp releases to formal release
+
+# 把某 Qt 版本的所有 temp release 资产归集为正式 release(下游 buildRedPanda-CPP 依赖此命名契约):
+#   temp: tag = temp_Qt_<版本>-<FILE_NAME>, 资产 = Qt_<版本>-<FILE_NAME>.7z
+#   正式: tag = Qt<版本>_<rev>(默认 rev0), 归集全部资产
+# 归集完成后, 下游 buildRedPanda-CPP 在其 Actions 页手动触发对应工作流。
+
+on:
+  workflow_dispatch:
+    inputs:
+      qt_version:
+        description: 'Qt 完整版本号(如 6.12.0)'
+        required: true
+        default: '6.12.0'
+      rev:
+        description: '正式 release 后缀'
+        required: true
+        default: 'rev0'
+      delete_temp:
+        description: '归集后是否删除 temp release'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promote-${{ inputs.qt_version }}
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - name: Collect temp release assets into formal release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        VER="${{ inputs.qt_version }}"
+        TAG="Qt${VER}_${{ inputs.rev }}"
+        echo "Formal release tag: $TAG"
+
+        TEMP_TAGS=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName \
+          --jq "[.[] | select(.tagName | startswith(\"temp_Qt_${VER}-\")) | .tagName]")
+        COUNT=$(echo "$TEMP_TAGS" | jq length)
+        echo "found $COUNT temp releases for Qt $VER"
+        if [ "$COUNT" -eq 0 ]; then
+          echo "ERROR: no temp releases found for Qt $VER (patterns: temp_Qt_${VER}-*)"
+          exit 1
+        fi
+        echo "$TEMP_TAGS" | jq -r '.[]'
+
+        # 创建正式 release(已存在则复用)
+        gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --title "Qt $VER (${{ inputs.rev }})" \
+            --notes "Qt $VER Windows static builds, collected from temp releases. See README for the compiler matrix."
+
+        WORK=$(mktemp -d)
+        for tag in $(echo "$TEMP_TAGS" | jq -r '.[]'); do
+          echo "downloading $tag"
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --dir "$WORK" --clobber
+        done
+        ls -lh "$WORK"
+
+        gh release upload "$TAG" "$WORK"/*.7z --repo "$GITHUB_REPOSITORY" --clobber
+
+        if [ "${{ inputs.delete_temp }}" = "true" ]; then
+          echo "deleting temp releases"
+          for tag in $(echo "$TEMP_TAGS" | jq -r '.[]'); do
+            gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+          done
+        fi
+
+        echo "=== formal release $TAG assets ==="
+        gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'

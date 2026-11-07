@@ -182,11 +182,44 @@ Runner：Qt6 系列用 `windows-latest`（= windows-2025，预装 VS2022 17.14�
 - URL 有效性验证：qt.io 用 `curl.exe -sIL -w "%{http_code}"` 或下载后看文件大小；GitHub release 资产列表用网页抓取 `releases/expanded_assets/<tag>` 页。
 - 扫描第三方库源码：从 zip 提取到工作区临时目录（如 `.tmp-*`，用完即删），7z x 会保留完整嵌套路径。
 
-## 10. 历史升级记录（快照）
+## 10. 模板化构建路径（2026-11 新增，待 CI 实测验证）
+
+Qt6 的 12 个独立工作流已收敛为「1 份配置 + 2 个工作流 + 1 个参数化脚本」，与旧工作流**并存**；旧 `buildQt6_*.yml` 在新路径验证稳定前仍是默认方式。
+
+### 10.1 新增文件
+
+| 文件 | 作用 |
+|------|------|
+| `config/compilers-qt6.json` | **单一数据源**：6 条编译器线的全部参数（URL、解压目录、configure 参数原文（逐字取自旧脚本，pre/post 以 `-prefix %INSTALL_DIR%` 为界）、是否装 Perl、是否打 libc++ 补丁、vcvars 路径）。**修改参数前必须先跑 verify 脚本逐字节对拍旧脚本** |
+| `.github/workflows/build-qt6.yml` | 调度器：`workflow_dispatch` 输入 qt_version / qt_version2 / mode(full/rp/both)，从 JSON 生成矩阵（12 个任务） |
+| `.github/workflows/build-qt6-line.yml` | 可复用单线构建（`workflow_call`）：装 Perl/编译器 → 下载解压源码（带缓存）→ libc++ 补丁 → 调参数化脚本 → 打包 → temp release |
+| `buildQt6/build-qt6.cmd` | 参数化编译脚本：ROOT 由 `GITHUB_WORKSPACE` 父目录推导（本地回退按脚本位置上溯两级，不再硬编码 `D:\a\buildQt`）；全部关键步骤带 `\|\| exit /b 1` 门禁 + qmake.exe 产物校验 |
+
+### 10.2 升级流程变化（对照 §3）
+
+- **patch 版本升级**（如 6.12.0 → 6.12.1）：手动触发 `build Qt6 (matrix)`，输入新版本号即可，**不改任何文件**；验证后把 JSON 里的默认值更新为新版本。
+- **编译器升级**：只改 `config/compilers-qt6.json` 对应条目（URL、extract_to、path_bin、id）。
+- §5（包结构）、§7（libc++ 补丁）的经验已内化为 JSON 字段与 `build-qt6-line.yml` 的模式感知补丁步骤（full/submodule 路径自动区分）。
+
+### 10.3 正式发布与下游联动（promote-release.yml）
+
+- **temp release 保留**：一线一 temp tag，正式整理前资产即可下载（单文件体积大，直接下载方便）；是否清理由人工决定（`delete_temp` 输入默认 `false`）。与下游 buildRedPanda-CPP 不同——下游频率高、tag 固定会冲突，故不发 Release。
+- `.github/workflows/promote-release.yml`（手动触发，输入 qt_version/rev/delete_temp）：把该版本所有 `temp_Qt_<版本>-*` release 的资产归集为正式 release `Qt<版本>_<rev>`（默认 `Qt<版本>_rev0`），**取代原人工整理步骤**。
+- 建议流程：矩阵跑完 → 手动触发 promote（先不删 temp）→ 核对正式 release 资产齐全 → 下游 buildRedPanda-CPP 在其 Actions 页**手动触发**对应工作流（全部工作流均为手动触发，无事件联动）。
+
+### 10.4 注意事项
+
+- **命名契约不变**：产物 `Qt_<版本>-static-Release_<编译器>[_RP].7z`、temp tag `temp_Qt_<版本>-<FILE_NAME>`，下游 buildRedPanda-CPP 无感知。
+- 首次验证建议 mode=rp 先行（沿用 §3 的 RP 先行原则），通过后再跑 both。
+- 新脚本的注释一律 ASCII（规避 cmd 在 UTF-8 注释下的解析错位风险，本地实测踩过）；旧脚本中文注释保持不动。
+- 编译器 bin 路径由工作流步骤经 `GITHUB_PATH` 注入，脚本内不再做分号拆分（cmd 的 `%VAR:;= %` 在变量未定义时会解析崩溃，实测踩过）。
+
+## 11. 历史升级记录（快照）
 
 | 时间 | 内容 |
 |------|------|
 | 2026-11 | Action 三件套升级（checkout v7 / setup-python v7 / action-gh-release v3）；Perl 5.42.2.1→5.42.3.1；llvm-mingw 20260616→20261104（LLVM 23.1.5）；Qt 官方线 LLVM-MinGW 17.0.6→22.1.7、MinGW 13.1.0→15.1.0（6.12.0 分支）；Qt 6.11.3、6.12.0 分支建立并全线编译成功，合并 main |
+| 2026-11 | 加固改造（main-new 分支）：36 个工作流 curl 加固/timeout/concurrency/Qt源码zip缓存（打包保持 -mx=9 体积优先）；36 个 cmd 加 errorlevel 门禁与 qmake.exe 产物校验（移除 cmd /k）；jom 改 https；新增 §10 模板化构建路径与 promote-release.yml 正式发布自动化 |
 | 经验教训 | 见 §5（包结构）、§7（libc++ 23 补丁与 CXXFLAGS 禁用）——**这两节是本项目独有的、网上查不到的实战知识** |
 
 ---
