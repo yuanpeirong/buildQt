@@ -1,0 +1,130 @@
+name: build Qt6 (matrix)
+
+# Qt6 模板化构建入口: 从 config/compilers-qt6.json 生成矩阵并调用 build-qt6-line.yml。
+# 用法(见 AI_MAINTENANCE_GUIDE §11):
+#   - 升级 Qt 版本: 触发时改 qt_version / qt_version2 输入即可, 无需改任何文件;
+#   - 升级/新增编译器线: 只改 config/compilers-qt6.json。
+# 旧 buildQt6_*.yml 工作流暂时保留并行, 验证稳定后再退役。
+
+on:
+  workflow_dispatch:
+    inputs:
+      qt_version:
+        description: 'Qt 完整版本号(如 6.12.0)'
+        required: true
+        default: '6.12.0'
+      qt_version2:
+        description: 'Qt 主.次两段(如 6.12, 用于下载URL)'
+        required: true
+        default: '6.12'
+      mode:
+        description: '构建模式'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - full
+          - rp
+          - both
+      lines:
+        description: '仅构建这些编译器线(逗号分隔, 留空=按 mode 输入跑全部)。无后缀=只跑完整版; 加 _RP=只跑 RP 版; 加 _both=完整版+RP 版, 如: msvc2022,msvc2026_RP,llvm-mingw_both'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix:
+    name: Generate matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+
+    - name: Generate matrix from config
+      id: gen
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $config = Get-Content config/compilers-qt6.json -Raw | ConvertFrom-Json
+        $mode = "${{ inputs.mode }}"
+        $modes = if ($mode -eq 'both') { @('full','rp') } else { @($mode) }
+        $linesFilter = @("${{ inputs.lines }}" -split ',' | ForEach-Object { $_.Trim() }) | Where-Object { $_ }
+        # 组装目标: lines 留空 = 全部线 x mode 输入; 否则按命名约定逐条解析(无后缀=完整版, _RP=RP 版, _both=两者)
+        $targets = @()
+        if ($linesFilter) {
+          foreach ($token in $linesFilter) {
+            $lineId = $token
+            $tokenModes = @('full')
+            if ($token -like '*_RP') { $lineId = $token.Substring(0, $token.Length - 3); $tokenModes = @('rp') }
+            elseif ($token -like '*_both') { $lineId = $token.Substring(0, $token.Length - 5); $tokenModes = @('full','rp') }
+            if (-not ($config.lines | Where-Object { $_.id -eq $lineId })) {
+              Write-Host "ERROR: unknown compiler line in lines input: $token (known ids: $(($config.lines | ForEach-Object id) -join ', '))"
+              exit 1
+            }
+            $targets += [ordered]@{ lineId = $lineId; modes = $tokenModes }
+          }
+        } else {
+          foreach ($line in $config.lines) {
+            $targets += [ordered]@{ lineId = $line.id; modes = $modes }
+          }
+        }
+        $entries = @()
+        foreach ($t in $targets) {
+          $line = $config.lines | Where-Object { $_.id -eq $t.lineId }
+          foreach ($m in $t.modes) {
+            $entries += [ordered]@{
+              id                   = $line.id
+              compiler_id          = $line.compiler_id
+              mode                 = $m
+              runner               = $line.runner
+              needs_perl           = [bool]$line.needs_perl
+              apply_libcpp_patches = [bool]$line.apply_libcpp_patches
+              configure_full_pre   = $line.configure.full.pre
+              configure_full_post  = $line.configure.full.post
+              configure_rp_pre     = $line.configure.rp.pre
+              configure_rp_post    = $line.configure.rp.post
+              compiler_source      = $line.compiler.source
+              compiler_url         = $line.compiler.url
+              pkg_type             = $line.compiler.pkg_type
+              extract_to           = $line.compiler.extract_to
+              path_bin             = $line.compiler.path_bin
+              vcvars               = $line.vcvars
+            }
+          }
+        }
+        $json = ConvertTo-Json @($entries) -Compress
+        "matrix=$json" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8NoBOM
+        Write-Host "generated $($entries.Count) matrix entries"
+
+  build:
+    needs: matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+    name: Qt${{ inputs.qt_version }} ${{ matrix.compiler_id }}${{ matrix.mode == 'rp' && '_RP' || '' }}
+    uses: ./.github/workflows/build-qt6-line.yml
+    with:
+      qt_version: ${{ inputs.qt_version }}
+      qt_version2: ${{ inputs.qt_version2 }}
+      compiler_id: ${{ matrix.compiler_id }}
+      mode: ${{ matrix.mode }}
+      runner: ${{ matrix.runner }}
+      needs_perl: ${{ matrix.needs_perl }}
+      apply_libcpp_patches: ${{ matrix.apply_libcpp_patches }}
+      configure_full_pre: ${{ matrix.configure_full_pre }}
+      configure_full_post: ${{ matrix.configure_full_post }}
+      configure_rp_pre: ${{ matrix.configure_rp_pre }}
+      configure_rp_post: ${{ matrix.configure_rp_post }}
+      compiler_source: ${{ matrix.compiler_source }}
+      compiler_url: ${{ matrix.compiler_url }}
+      pkg_type: ${{ matrix.pkg_type }}
+      extract_to: ${{ matrix.extract_to }}
+      path_bin: ${{ matrix.path_bin }}
+      vcvars: ${{ matrix.vcvars }}
+    secrets: inherit

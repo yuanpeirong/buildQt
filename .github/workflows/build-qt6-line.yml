@@ -1,0 +1,262 @@
+name: build Qt6 line (reusable)
+
+# 可复用的单条编译器线构建工作流(Qt6)。
+# 由 build-qt6.yml 以矩阵方式调用; 也可被其他 workflow_call 调用。
+# 命名契约与旧工作流保持一致: 产物 Qt_<版本>-<static-Release_<编译器>[_RP]>.7z,
+# temp release tag: temp_Qt_<版本>-<FILE_NAME> (下游 buildRedPanda-CPP 依赖此契约)。
+
+on:
+  workflow_call:
+    inputs:
+      qt_version:
+        description: 'Qt 完整版本号'
+        type: string
+        required: true
+      qt_version2:
+        description: 'Qt 主.次两段(下载URL用)'
+        type: string
+        required: true
+      compiler_id:
+        description: '编译器代号(FILE_NAME 用, 如 llvm-mingw23.1.5_64_UCRT)'
+        type: string
+        required: true
+      mode:
+        description: 'full | rp'
+        type: string
+        required: true
+      runner:
+        description: 'runs-on 镜像'
+        type: string
+        required: true
+      needs_perl:
+        description: '是否安装 Perl'
+        type: boolean
+        required: true
+      apply_libcpp_patches:
+        description: '是否应用 libc++ 头文件补丁'
+        type: boolean
+        required: true
+      configure_full_pre:
+        description: '完整版 configure.bat 参数前段(-prefix 之前, 旧脚本原文)'
+        type: string
+        required: true
+      configure_full_post:
+        description: '完整版 configure.bat 参数后段(-prefix 之后, 旧脚本原文)'
+        type: string
+        required: true
+      configure_rp_pre:
+        description: 'RP版 configure.bat 参数前段(-prefix 之前, 旧脚本原文)'
+        type: string
+        required: true
+      configure_rp_post:
+        description: 'RP版 configure.bat 参数后段(-prefix 之后, 旧脚本原文)'
+        type: string
+        required: true
+      compiler_source:
+        description: 'download | runner'
+        type: string
+        required: true
+      compiler_url:
+        description: '编译器包下载地址'
+        type: string
+        required: true
+      pkg_type:
+        description: 'zip | 7z'
+        type: string
+        required: true
+      extract_to:
+        description: '编译器解压目录(相对 D:\a\buildQt)'
+        type: string
+        required: true
+      path_bin:
+        description: '编译器 bin 相对路径(分号分隔)'
+        type: string
+        required: true
+      vcvars:
+        description: 'MSVC vcvarsall.bat 路径(非MSVC留空)'
+        type: string
+        required: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 300
+    env:
+      FILE_NAME: ${{ inputs.mode == 'rp' && format('static-Release_{0}_RP', inputs.compiler_id) || format('static-Release_{0}', inputs.compiler_id) }}
+
+    steps:
+    # 检出本仓库
+    - name: Checkout repository
+      uses: actions/checkout@v7
+
+    # 读取下载缓存(Qt源码zip, 命中则跳过下载)
+    - name: Cache Qt source zips
+      uses: actions/cache@v4
+      with:
+        path: D:\a\buildQt\Qt\*.zip
+        key: qtsrc-${{ inputs.qt_version }}-${{ inputs.mode == 'rp' && 'RP' || 'full' }}
+
+    # 安装python
+    - name: Setup Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.13'
+        architecture: 'x64'
+
+    # 安装 Perl(仅需要的工作流线)
+    - name: Setup Perl
+      if: ${{ inputs.needs_perl }}
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        curl -L --fail --retry 3 --connect-timeout 30 -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
+        unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
+
+    # 安装 Ninja(与旧工作流一致, 编译脚本 PATH 会指向 D:\a\buildQt\ninja)
+    - name: Setup Ninja
+      run: |
+        cd ..  #Directory: D:\a\buildQt
+        mkdir -p ninja
+        curl -L --fail --retry 3 --connect-timeout 30 -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
+        unzip -q ninja.zip -d ./ninja
+
+    # MSVC 线环境(与 main 旧工作流一致)
+    - name: Add MSBuild to PATH
+      if: ${{ inputs.compiler_source == 'runner' }}
+      uses: microsoft/setup-msbuild@v3
+      with:
+        msbuild-architecture: x64
+
+    - name: Setup vsdevenv
+      if: ${{ inputs.compiler_source == 'runner' }}
+      uses: seanmiddleditch/gha-setup-vsdevenv@master
+
+    # 安装编译器(Runner 自带的 MSVC 线跳过)
+    - name: Setup Compiler
+      if: ${{ inputs.compiler_source == 'download' }}
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        Set-Location "$env:GITHUB_WORKSPACE\.."   # Directory: D:\a\buildQt
+        $url = "${{ inputs.compiler_url }}"
+        $file = $url.Split('/')[-1]
+        $dest = ("${{ inputs.extract_to }}" -replace '\\','/')
+        if ("${{ inputs.pkg_type }}" -eq 'zip') {
+          if (-not (Test-Path $file)) {
+            curl -L --fail --retry 3 --connect-timeout 30 -o $file $url
+          } else { Write-Host "cache/compiler zip hit: $file" }
+          unzip -q $file -d $dest
+        } else {
+          if (-not (Test-Path $file)) {
+            curl -L --fail --retry 3 --connect-timeout 30 -o $file $url
+          } else { Write-Host "cache/compiler 7z hit: $file" }
+          7z x $file "-o$dest"
+        }
+        if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: compiler setup failed"; exit 1 }
+
+    # 将编译器 bin 目录注入 PATH(供后续步骤与编译脚本使用)
+    - name: Add compiler to PATH
+      if: ${{ inputs.path_bin != '' }}
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $root = "$env:GITHUB_WORKSPACE\.."
+        "${{ inputs.path_bin }}" -split ';' | ForEach-Object {
+          $p = Join-Path $root ($_ -replace '/','\')
+          if (Test-Path $p) { $p | Add-Content $env:GITHUB_PATH; Write-Host "PATH += $p" }
+          else { Write-Host "ERROR: compiler bin dir not found: $p"; exit 1 }
+        }
+
+    # 下载并解压Qt源代码(zip 已被缓存时跳过下载)
+    - name: Setup Qt source
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        New-Item -ItemType Directory -Force -Path "D:\a\buildQt\Qt\${{ inputs.qt_version }}" | Out-Null
+        New-Item -ItemType Directory -Force -Path "D:\a\buildQt\Qt\${{ inputs.qt_version }}-static" | Out-Null
+        Set-Location "D:\a\buildQt\Qt"
+        if ("${{ inputs.mode }}" -eq 'full') {
+          $files = @(@{
+            zip = "qt-everywhere-src.zip"
+            url = "https://download.qt.io/official_releases/qt/${{ inputs.qt_version2 }}/${{ inputs.qt_version }}/single/qt-everywhere-src-${{ inputs.qt_version }}.zip"
+          })
+        } else {
+          $files = @(
+            @{ zip = "qtbase-everywhere-src.zip";         url = "https://download.qt.io/official_releases/qt/${{ inputs.qt_version2 }}/${{ inputs.qt_version }}/submodules/qtbase-everywhere-src-${{ inputs.qt_version }}.zip" },
+            @{ zip = "qttools-everywhere-src.zip";        url = "https://download.qt.io/official_releases/qt/${{ inputs.qt_version2 }}/${{ inputs.qt_version }}/submodules/qttools-everywhere-src-${{ inputs.qt_version }}.zip" },
+            @{ zip = "qttranslations-everywhere-src.zip"; url = "https://download.qt.io/official_releases/qt/${{ inputs.qt_version2 }}/${{ inputs.qt_version }}/submodules/qttranslations-everywhere-src-${{ inputs.qt_version }}.zip" },
+            @{ zip = "qtsvg-everywhere-src.zip";          url = "https://download.qt.io/official_releases/qt/${{ inputs.qt_version2 }}/${{ inputs.qt_version }}/submodules/qtsvg-everywhere-src-${{ inputs.qt_version }}.zip" }
+          )
+        }
+        foreach ($f in $files) {
+          if (-not (Test-Path $f.zip)) {
+            curl -L --fail --retry 3 --connect-timeout 30 -o $f.zip $f.url
+            if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: download failed: $($f.url)"; exit 1 }
+          } else { Write-Host "cache hit: $($f.zip)" }
+          unzip -q $f.zip -d ./${{ inputs.qt_version }}
+          if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: unzip failed: $($f.zip)"; exit 1 }
+        }
+
+    # 补丁：libc++ 23 精简头文件传递依赖的补偿(仅 llvm-mingw 线, 幂等)
+    - name: Apply libc++ 23 patches
+      if: ${{ inputs.apply_libcpp_patches }}
+      shell: pwsh
+      run: |
+        # single 包与 submodule 包目录结构不同(见 AI_MAINTENANCE_GUIDE §5.1)
+        $base = "D:\a\buildQt\Qt\${{ inputs.qt_version }}"
+        if ("${{ inputs.mode }}" -eq 'full') {
+          $src = "$base\qt-everywhere-src-${{ inputs.qt_version }}\qttools\src"
+        } else {
+          $src = "$base\qttools-everywhere-src-${{ inputs.qt_version }}\src"
+        }
+        # 1) releasehelper.h：在 qstringlist.h 后补 #include <vector>
+        $h = "$src\linguist\shared\releasehelper.h"
+        if (Test-Path $h) {
+          $c = Get-Content $h -Raw
+          if ($c -notmatch 'include\s*<vector>') {
+            $c = $c.Replace('#include <QtCore/qstringlist.h>', "#include <QtCore/qstringlist.h>`r`n#include <vector>")
+            Set-Content $h $c -NoNewline
+            Write-Host "patched: releasehelper.h"
+          }
+        } else { Write-Host "skip: releasehelper.h not found" }
+        # 2) litehtml：文件开头补 #include <cstdlib>(atoi 等 stdlib 函数声明缺失)
+        foreach ($n in @('css_selector.cpp','el_before_after.cpp','el_font.cpp','element.cpp','html_microsyntaxes.cpp','html_tag.cpp','render_block.cpp','table.cpp','url.cpp')) {
+          $f = "$src\assistant\qlitehtml\src\3rdparty\litehtml\src\$n"
+          if (Test-Path $f) {
+            $c = Get-Content $f -Raw
+            if ($c -notmatch 'include\s*<cstdlib>') {
+              Set-Content $f ("#include <cstdlib>`r`n" + $c) -NoNewline
+              Write-Host "patched: litehtml/$n"
+            }
+          } else { Write-Host "skip: litehtml/$n not found" }
+        }
+
+    # 构建Qt(调用参数化编译脚本)
+    - name: Build Qt
+      shell: cmd
+      run: |
+        set QT_VERSION=${{ inputs.qt_version }}
+        set MODE=${{ inputs.mode }}
+        set COMPILER_ID=${{ inputs.compiler_id }}
+        set QT_CONFIGURE_PRE=${{ inputs.mode == 'rp' && inputs.configure_rp_pre || inputs.configure_full_pre }}
+        set QT_CONFIGURE_POST=${{ inputs.mode == 'rp' && inputs.configure_rp_post || inputs.configure_full_post }}
+        set VCVARS=${{ inputs.vcvars }}
+        call buildQt6\build-qt6.cmd
+
+    # 打包
+    - name: Package binaries
+      run: |
+        7z a Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}.7z ../Qt/${{ inputs.qt_version }}-static -mx=9
+
+    # 上传
+    - uses: actions/upload-artifact@v7
+      with:
+        name: Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}
+        path: Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}.7z
+
+    # 发布
+    - name: TempRelease
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: temp_Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}
+        release_name: TempRelease_Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}
+        files: Qt_${{ inputs.qt_version }}-${{ env.FILE_NAME }}.7z

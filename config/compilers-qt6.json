@@ -1,0 +1,157 @@
+{
+  "_说明": "Qt6 编译器线集中配置(单一数据源)。升级编译器/Qt版本只改这里, 由 build-qt6.yml 生成矩阵并调用 build-qt6-line.yml。路径均相对 D:\\a\\buildQt(即 GITHUB_WORKSPACE 上级)。",
+  "qt_version": "6.12.0",
+  "qt_version2": "6.12",
+  "lines": [
+    {
+      "id": "msvc2022",
+      "compiler_id": "msvc2022_64",
+      "runner": "windows-2022",
+      "needs_perl": false,
+      "apply_libcpp_patches": false,
+      "compiler": {
+        "source": "runner",
+        "url": "",
+        "pkg_type": "",
+        "extract_to": "",
+        "path_bin": ""
+      },
+      "vcvars": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-msvc"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc"
+        }
+      }
+    },
+    {
+      "id": "msvc2026",
+      "compiler_id": "msvc2026_64",
+      "runner": "windows-latest",
+      "needs_perl": false,
+      "apply_libcpp_patches": false,
+      "compiler": {
+        "source": "runner",
+        "url": "",
+        "pkg_type": "",
+        "extract_to": "",
+        "path_bin": ""
+      },
+      "vcvars": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-msvc -skip qtconnectivity -skip qtspeech"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc"
+        }
+      }
+    },
+    {
+      "id": "mingw1510_64",
+      "compiler_id": "mingw1510_64",
+      "runner": "windows-latest",
+      "needs_perl": true,
+      "apply_libcpp_patches": false,
+      "compiler": {
+        "source": "download",
+        "url": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw1510/qt.tools.win64_mingw1510/15.1.0-202610271023mingw1510.7z",
+        "pkg_type": "7z",
+        "extract_to": "Tools/mingw1510_64",
+        "path_bin": "Tools/mingw1510_64/bin"
+      },
+      "vcvars": "",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-g++"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++"
+        }
+      }
+    },
+    {
+      "id": "llvm-mingw22.1.7",
+      "compiler_id": "llvm-mingw22.1.7_64_UCRT",
+      "runner": "windows-latest",
+      "needs_perl": true,
+      "apply_libcpp_patches": true,
+      "compiler": {
+        "source": "download",
+        "url": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_llvm_mingw2217/qt.tools.win64_llvm_mingw2217/22.1.7-202608200704llvm_mingw2217.7z",
+        "pkg_type": "7z",
+        "extract_to": "Tools/llvm-mingw2217_64",
+        "path_bin": "Tools/llvm-mingw2217_64/bin"
+      },
+      "vcvars": "",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop"
+        }
+      }
+    },
+    {
+      "id": "mingw1620_64_UCRT",
+      "compiler_id": "mingw1620_64_UCRT",
+      "runner": "windows-latest",
+      "needs_perl": true,
+      "apply_libcpp_patches": false,
+      "compiler": {
+        "source": "download",
+        "url": "https://github.com/niXman/mingw-builds-binaries/releases/download/16.2.0-rt_v14-rev1/x86_64-16.2.0-release-posix-seh-ucrt-rt_v14-rev1.7z",
+        "pkg_type": "7z",
+        "extract_to": ".",
+        "path_bin": "mingw64/bin"
+      },
+      "vcvars": "",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-g++"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++"
+        }
+      }
+    },
+    {
+      "id": "llvm-mingw",
+      "compiler_id": "llvm-mingw23.1.5_64_UCRT",
+      "runner": "windows-latest",
+      "needs_perl": true,
+      "apply_libcpp_patches": true,
+      "compiler": {
+        "source": "download",
+        "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20261104/llvm-mingw-20261104-ucrt-x86_64.zip",
+        "pkg_type": "zip",
+        "extract_to": ".",
+        "path_bin": "llvm-mingw-20261104-ucrt-x86_64/bin"
+      },
+      "vcvars": "",
+      "configure": {
+        "full": {
+          "pre": "-static -static-runtime -release",
+          "post": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop"
+        },
+        "rp": {
+          "pre": "-static -static-runtime -release -nomake examples",
+          "post": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop"
+        }
+      }
+    }
+  ]
+}
