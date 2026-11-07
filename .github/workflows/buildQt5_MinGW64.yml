@@ -3,6 +3,10 @@ name: build_Qt5.15.19_MinGW64
 on: workflow_dispatch
 #on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   QT_VERSION: 5.15.19
   QT_VERSION2: 5.15
@@ -11,6 +15,7 @@ env:
 jobs:
   windows_mingw64_static_release:
     runs-on: windows-latest
+    timeout-minutes: 300
 
     steps:
     # 检出本仓库
@@ -25,6 +30,13 @@ jobs:
         architecture: 'x64'
 
     # 安装 Perl    
+    # 读取下载缓存(Qt源码zip, 命中则跳过下载)
+    - name: Cache Qt source zips
+      uses: actions/cache@v4
+      with:
+        path: D:\a\buildQt\Qt\*.zip
+        key: qtsrc-${{ env.QT_VERSION }}-${{ endsWith(env.FILE_NAME, '_RP') && 'RP' || 'full' }}
+
     - name: Setup Perl
       run: |
         cd ..  #Directory: D:\a\buildQt
@@ -57,7 +69,9 @@ jobs:
         mkdir -p ${{env.QT_VERSION}}-static
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
-        curl -L --fail --retry 3 --connect-timeout 30 -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        if (-not (Test-Path qt-everywhere-opensource-src.zip)) {
+          curl -L --fail --retry 3 --connect-timeout 30 -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        } else { Write-Host "cache hit: qt-everywhere-opensource-src.zip" }
         unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
