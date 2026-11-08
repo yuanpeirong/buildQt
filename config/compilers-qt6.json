@@ -1,0 +1,162 @@
+{
+  "QT_VERSION": "6.12.0",
+  "QT_VERSION2": "6.12",
+  "lines": [
+    {
+      "id": "msvc2022",
+      "DISPLAY_NAME": "msvc2022",
+      "JOB_KEY": "windows_msvc_static_release",
+      "COMPILER_ID": "msvc2022_64",
+      "RUNS_ON": "windows-2022",
+      "NEEDS_PERL": false,
+      "LIBCPP_PATCH": false,
+      "COMPILER_SOURCE": "runner",
+      "COMPILER_URL": "",
+      "COMPILER_PKG": "",
+      "COMPILER_DEST": "",
+      "PATH_BIN": "",
+      "VCVARS": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-msvc"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc"
+        }
+      },
+      "STEP_NAME": ""
+    },
+    {
+      "id": "msvc2026",
+      "DISPLAY_NAME": "msvc2026",
+      "JOB_KEY": "windows_msvc_static_release",
+      "COMPILER_ID": "msvc2026_64",
+      "RUNS_ON": "windows-latest",
+      "NEEDS_PERL": false,
+      "LIBCPP_PATCH": false,
+      "COMPILER_SOURCE": "runner",
+      "COMPILER_URL": "",
+      "COMPILER_PKG": "",
+      "COMPILER_DEST": "",
+      "PATH_BIN": "",
+      "VCVARS": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-msvc -skip qtconnectivity -skip qtspeech"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc"
+        }
+      },
+      "STEP_NAME": ""
+    },
+    {
+      "id": "mingw1510_64",
+      "DISPLAY_NAME": "MinGW1510_64",
+      "JOB_KEY": "windows_mingw64_static_release",
+      "COMPILER_ID": "mingw1510_64",
+      "RUNS_ON": "windows-latest",
+      "NEEDS_PERL": true,
+      "LIBCPP_PATCH": false,
+      "COMPILER_SOURCE": "download",
+      "COMPILER_URL": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw1510/qt.tools.win64_mingw1510/15.1.0-202610271023mingw1510.7z",
+      "COMPILER_PKG": "7z",
+      "COMPILER_DEST": "Tools/mingw1510_64",
+      "PATH_BIN": "Tools\\mingw1510_64\\bin",
+      "VCVARS": "",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-g++"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++"
+        }
+      },
+      "STEP_NAME": "Setup MinGW64"
+    },
+    {
+      "id": "llvm-mingw22.1.7",
+      "DISPLAY_NAME": "LLVM-MinGW22.1.7",
+      "JOB_KEY": "windows_llvm-mingw_static_release",
+      "COMPILER_ID": "llvm-mingw22.1.7_64_UCRT",
+      "RUNS_ON": "windows-latest",
+      "NEEDS_PERL": true,
+      "LIBCPP_PATCH": true,
+      "COMPILER_SOURCE": "download",
+      "COMPILER_URL": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_llvm_mingw2217/qt.tools.win64_llvm_mingw2217/22.1.7-202608200704llvm_mingw2217.7z",
+      "COMPILER_PKG": "7z",
+      "COMPILER_DEST": "Tools/llvm-mingw2217_64",
+      "PATH_BIN": "Tools\\llvm-mingw2217_64\\bin",
+      "VCVARS": "",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop"
+        }
+      },
+      "STEP_NAME": "Setup LLVM-MinGW"
+    },
+    {
+      "id": "mingw1620_64_UCRT",
+      "DISPLAY_NAME": "MinGW64",
+      "JOB_KEY": "windows_mingw64_static_release",
+      "COMPILER_ID": "mingw1620_64_UCRT",
+      "RUNS_ON": "windows-latest",
+      "NEEDS_PERL": true,
+      "LIBCPP_PATCH": false,
+      "COMPILER_SOURCE": "download",
+      "COMPILER_URL": "https://github.com/niXman/mingw-builds-binaries/releases/download/16.2.0-rt_v14-rev1/x86_64-16.2.0-release-posix-seh-ucrt-rt_v14-rev1.7z",
+      "COMPILER_PKG": "7z",
+      "COMPILER_DEST": ".",
+      "PATH_BIN": "mingw64\\bin",
+      "VCVARS": "",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop -platform win32-g++"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-g++"
+        }
+      },
+      "STEP_NAME": "Setup MinGW64"
+    },
+    {
+      "id": "llvm-mingw",
+      "DISPLAY_NAME": "LLVM-MinGW",
+      "JOB_KEY": "windows_llvm-mingw_static_release",
+      "COMPILER_ID": "llvm-mingw23.1.5_64_UCRT",
+      "RUNS_ON": "windows-latest",
+      "NEEDS_PERL": true,
+      "LIBCPP_PATCH": true,
+      "COMPILER_SOURCE": "download",
+      "COMPILER_URL": "https://github.com/mstorsjo/llvm-mingw/releases/download/20261104/llvm-mingw-20261104-ucrt-x86_64.zip",
+      "COMPILER_PKG": "zip",
+      "COMPILER_DEST": ".",
+      "PATH_BIN": "llvm-mingw-20261104-ucrt-x86_64\\bin",
+      "VCVARS": "",
+      "CONFIGURE": {
+        "full": {
+          "PRE": "-static -static-runtime -release",
+          "POST": "-nomake examples -nomake tests -skip qtwebengine -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -qt-harfbuzz -qt-webp -qt-tiff -schannel -opengl desktop"
+        },
+        "rp": {
+          "PRE": "-static -static-runtime -release -nomake examples",
+          "POST": "-opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop"
+        }
+      },
+      "STEP_NAME": "Setup LLVM-MinGW"
+    }
+  ]
+}
