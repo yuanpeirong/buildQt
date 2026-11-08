@@ -28,14 +28,14 @@ jobs:
     - name: Setup Perl
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
     # 安装 MinGW1510_64    
     - name: Setup MinGW64
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o mingw1510.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw1510/qt.tools.win64_mingw1510/15.1.0-202610271023mingw1510.7z
+        curl -L --fail --retry 3 --connect-timeout 30 -o mingw1510.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw1510/qt.tools.win64_mingw1510/15.1.0-202610271023mingw1510.7z
         7z x D:\a\buildQt\mingw1510.7z -oD:\a\buildQt\Tools\mingw1510_64
 
     # 安装 Ninja
@@ -43,7 +43,7 @@ jobs:
       run: |
         cd ..  #Directory: D:\a\buildQt
         mkdir -p ninja
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
         unzip -q ninja.zip -d ./ninja
 
     # 构建Qt
@@ -65,7 +65,7 @@ jobs:
         mkdir -p ${{env.QT_VERSION}}-static
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
-        curl -L -o qt-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qt-everywhere-src.zip https://download.qt.io/official_releases/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-src-${{env.QT_VERSION}}.zip
         unzip -q qt-everywhere-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本

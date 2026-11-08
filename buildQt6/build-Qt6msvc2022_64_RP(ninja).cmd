@@ -33,42 +33,47 @@ SET BUILD_DIR="%QT_PATH%\%QT_VERSION%\build-%MSVC_VERSION%"
 :: 根据需要进行全新构建
 rmdir /s /q "%BUILD_DIR%"
 :: 定位到构建目录：
-mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
+mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%" || exit /b 1
 
 ::编译qtbase
 mkdir build-qtbase
 cd build-qtbase
-call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc
-cmake --build . --parallel
-ninja install
+call %SRC_qtbase%\configure.bat -static -static-runtime -release -nomake examples -prefix %INSTALL_DIR% -opensource -confirm-license -qt-libpng -qt-libjpeg -qt-zlib -qt-pcre -qt-freetype -schannel -opengl desktop -platform win32-msvc || exit /b 1
+cmake --build . --parallel || exit /b 1
+ninja install || exit /b 1
 cd ..
 
 ::编译qttools
 mkdir build-qttools
 cd build-qttools
-cmake %SRC_qttools% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
-cmake --build . --parallel
-ninja install
+cmake %SRC_qttools% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% || exit /b 1
+cmake --build . --parallel || exit /b 1
+ninja install || exit /b 1
 cd ..
 
 ::编译qttranslations
 mkdir build-qttranslations
 cd build-qttranslations
-cmake %SRC_qttranslations% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
-cmake --build . --parallel
-ninja install
+cmake %SRC_qttranslations% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% || exit /b 1
+cmake --build . --parallel || exit /b 1
+ninja install || exit /b 1
 cd ..
 
 ::编译qtsvg
 mkdir build-qtsvg
 cd build-qtsvg
-cmake %SRC_qtsvg% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR%
-cmake --build . --parallel
-ninja install
+cmake %SRC_qtsvg% -G "Ninja" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%INSTALL_DIR% || exit /b 1
+cmake --build . --parallel || exit /b 1
+ninja install || exit /b 1
 cd ..
 
 ::复制qt.conf
-copy %~dp0\qt.conf %INSTALL_DIR%\bin
+copy %~dp0\qt.conf %INSTALL_DIR%\bin || exit /b 1
 
 ::@pause
-@cmd /k cd /d %INSTALL_DIR%
+:: 校验构建产物完整性(防止构建失败后发布残缺包)
+set CHECK_QMAKE=%INSTALL_DIR:"=%
+if not exist "%CHECK_QMAKE%\bin\qmake.exe" (
+    echo [ERROR] qmake.exe not found in INSTALL_DIR\bin, build failed.
+    exit /b 1
+)

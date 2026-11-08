@@ -28,7 +28,7 @@ jobs:
     - name: Setup Perl
       run: |
         cd ..  #Directory: D:\a\buildQt
-        curl -L -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o strawberry-perl-64bit-portable.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54231_64bit/strawberry-perl-5.42.3.1-64bit-portable.zip
         unzip -q strawberry-perl-64bit-portable.zip -d ./Strawberry
 
     # 安装 MinGW810_32    
@@ -36,7 +36,7 @@ jobs:
       run: |
         cd ..  #Directory: D:\a\buildQt
         mkdir -p mingw32
-        curl -L -o 8.1.0-release-posix-seh.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw81/qt.tools.win32_mingw810/8.1.0-1-202411201005i686-8.1.0-gdb-11.2.0-release-posix-dwarf-rt_v6-rev0.7z
+        curl -L --fail --retry 3 --connect-timeout 30 -o 8.1.0-release-posix-seh.7z https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw81/qt.tools.win32_mingw810/8.1.0-1-202411201005i686-8.1.0-gdb-11.2.0-release-posix-dwarf-rt_v6-rev0.7z
         7z x D:\a\buildQt\8.1.0-release-posix-seh.7z -oD:\a\buildQt\mingw32
 
     # 构建Qt
@@ -58,7 +58,7 @@ jobs:
         mkdir -p ${{env.QT_VERSION}}-static
 
         # 下载源代码并解压，源代码目录D:\a\buildQt\Qt\${{env.QT_VERSION}}\XXX
-        curl -L -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
+        curl -L --fail --retry 3 --connect-timeout 30 -o qt-everywhere-opensource-src.zip https://download.qt.io/archive/qt/${{env.QT_VERSION2}}/${{env.QT_VERSION}}/single/qt-everywhere-opensource-src-${{env.QT_VERSION}}.zip
         unzip -q qt-everywhere-opensource-src.zip -d ./${{env.QT_VERSION}}
 
         # 调用编译脚本
